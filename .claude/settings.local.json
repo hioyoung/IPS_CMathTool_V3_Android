@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /Users/hio/Doc/GitHub/CMathTool_Android/cmathtool/src/main/jni/CMathTool)",
+      "Bash(mv /Users/hio/Doc/GitHub/CMathTool_Android/cmathtool/src/main/jni/CMathTool.c /Users/hio/Doc/GitHub/CMathTool_Android/cmathtool/src/main/jni/CMathTool/CMathTool.c)",
+      "Bash(mv /Users/hio/Doc/GitHub/CMathTool_Android/cmathtool/src/main/jni/CMathTool.h /Users/hio/Doc/GitHub/CMathTool_Android/cmathtool/src/main/jni/CMathTool/CMathTool.h)",
+      "Bash(./gradlew assembleDebug *)",
+      "Bash(rm -rf /Users/hio/Doc/GitHubV3/IPS_CMathTool_V3_Android/cmathtool/src/main/jni/CMathTool)",
+      "Bash(ln -s /Users/hio/Doc/GitHubV3/IPS_CMathTool_V3_C/CMathTool /Users/hio/Doc/GitHubV3/IPS_CMathTool_V3_Android/cmathtool/src/main/jni/CMathTool)",
+      "Bash(./gradlew test *)"
+    ]
+  }
+}
