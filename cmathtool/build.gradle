@@ -55,3 +55,20 @@ dependencies {
 repositories {
     mavenCentral()
 }
+
+afterEvaluate {
+    ['debug', 'release'].each { buildType ->
+        def variantName = buildType.capitalize()
+        def stripTaskName = "strip${variantName}DebugSymbols"
+
+        def copyTask = tasks.register("copy${variantName}NativeLibs", Copy) {
+            from(layout.buildDirectory.dir("intermediates/stripped_native_libs/${buildType}/${stripTaskName}/out/lib"))
+            into(layout.projectDirectory.dir("../OutputLib"))
+            include("**/*.so")
+        }
+
+        tasks.matching { it.name == "assemble${variantName}" }.configureEach {
+            finalizedBy(copyTask)
+        }
+    }
+}
