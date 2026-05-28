@@ -57,18 +57,32 @@ repositories {
 }
 
 afterEvaluate {
+    def ppsDir = layout.projectDirectory.dir("../../IPS_Engine_V3_Android/ipsengine/src/main/jni/IPSEngine/PPS")
+
     ['debug', 'release'].each { buildType ->
         def variantName = buildType.capitalize()
         def stripTaskName = "strip${variantName}DebugSymbols"
+        def libSrcDir = layout.buildDirectory.dir("intermediates/stripped_native_libs/${buildType}/${stripTaskName}/out/lib")
 
-        def copyTask = tasks.register("copy${variantName}NativeLibs", Copy) {
-            from(layout.buildDirectory.dir("intermediates/stripped_native_libs/${buildType}/${stripTaskName}/out/lib"))
+        def copyToOutputLibTask = tasks.register("copy${variantName}NativeLibs", Copy) {
+            from(libSrcDir)
             into(layout.projectDirectory.dir("../OutputLib"))
             include("**/*.so")
         }
 
+        def copyToPPSTask = tasks.register("copy${variantName}NativeLibsToPPS", Copy) {
+            from(libSrcDir)
+            into(ppsDir)
+            include("**/*.so")
+        }
+
+        def copyHeaderToPPSTask = tasks.register("copy${variantName}CMathToolHeaderToPPS", Copy) {
+            from(layout.projectDirectory.file("src/main/jni/CMathTool/CMathTool.h"))
+            into(ppsDir)
+        }
+
         tasks.matching { it.name == "assemble${variantName}" }.configureEach {
-            finalizedBy(copyTask)
+            finalizedBy(copyToOutputLibTask, copyToPPSTask, copyHeaderToPPSTask)
         }
     }
 }
