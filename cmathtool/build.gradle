@@ -58,6 +58,7 @@ repositories {
 
 afterEvaluate {
     def ppsDir = layout.projectDirectory.dir("../../IPS_Engine_V3_Android/ipsengine/src/main/jni/IPSEngine/PPS")
+    def jniLibsDir = layout.projectDirectory.dir("../../IPS_Engine_V3_Android/ipsengine/src/main/jni/jniLibs")
 
     ['debug', 'release'].each { buildType ->
         def variantName = buildType.capitalize()
@@ -70,9 +71,9 @@ afterEvaluate {
             include("**/*.so")
         }
 
-        def copyToPPSTask = tasks.register("copy${variantName}NativeLibsToPPS", Copy) {
+        def copyToJniLibsTask = tasks.register("copy${variantName}NativeLibsToJniLibs", Copy) {
             from(libSrcDir)
-            into(ppsDir)
+            into(jniLibsDir)
             include("**/*.so")
         }
 
@@ -82,7 +83,7 @@ afterEvaluate {
         }
 
         tasks.matching { it.name == "assemble${variantName}" }.configureEach {
-            finalizedBy(copyToOutputLibTask, copyToPPSTask, copyHeaderToPPSTask)
+            finalizedBy(copyToOutputLibTask, copyToJniLibsTask, copyHeaderToPPSTask)
         }
     }
 }
