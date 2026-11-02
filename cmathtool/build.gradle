@@ -40,7 +40,7 @@ android {
     }
     namespace 'com.ijali.cmathtool'
     buildToolsVersion '36.1.0'
-    ndkVersion '29.0.14033849 rc4'
+    ndkVersion '30.0.16248370'   // IPS_Engine_V3_Android 와 같은 NDK (29 rc4 는 설치·배포되지 않음)
 }
 
 dependencies {
