@@ -57,8 +57,9 @@ repositories {
 }
 
 afterEvaluate {
+    // IPS_Engine_V3_Android 는 CMathTool 을 소스로 정적 링크한다 (prebuilt .so 를 쓰지 않음).
+    // 여기서 만든 .so 는 OutputLib 에만 둔다 (엔진 jni/jniLibs 로 복사하지 않음).
     def ppsDir = layout.projectDirectory.dir("../../IPS_Engine_V3_Android/ipsengine/src/main/jni/IPSEngine/PPS")
-    def jniLibsDir = layout.projectDirectory.dir("../../IPS_Engine_V3_Android/ipsengine/src/main/jni/jniLibs")
     def outputLibDir = layout.projectDirectory.dir("../OutputLib")
 
     ['debug', 'release'].each { buildType ->
@@ -76,29 +77,13 @@ afterEvaluate {
             }
         }
 
-        // OutputLib에서 복사하여 libCMathTool.so, libCMathToolDebug.so 모두 포함
-        def copyToJniLibsTask = tasks.register("copy${variantName}NativeLibsToJniLibs", Copy) {
-            dependsOn(copyToOutputLibTask)
-            from(outputLibDir)
-            into(jniLibsDir)
-            include("**/*.so")
-        }
-
         def copyHeaderToPPSTask = tasks.register("copy${variantName}CMathToolHeaderToPPS", Copy) {
             from(layout.projectDirectory.file("src/main/jni/CMathTool/CMathTool.h"))
             into(ppsDir)
         }
 
         tasks.matching { it.name == "assemble${variantName}" }.configureEach {
-            finalizedBy(copyToOutputLibTask, copyToJniLibsTask, copyHeaderToPPSTask)
+            finalizedBy(copyToOutputLibTask, copyHeaderToPPSTask)
         }
-    }
-
-    // OutputLib을 공유하는 교차 variant 태스크 간 순서 명시 (Gradle implicit dependency 경고 해결)
-    tasks.named("copyDebugNativeLibsToJniLibs").configure {
-        mustRunAfter(tasks.named("copyReleaseNativeLibs"))
-    }
-    tasks.named("copyReleaseNativeLibsToJniLibs").configure {
-        mustRunAfter(tasks.named("copyDebugNativeLibs"))
     }
 }
